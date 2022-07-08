@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BackCursos.Data;
 using BackCursos.Models;
 
 namespace BackCursos.Controllers
 {
-    public class CategoriasController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CategoriasController : ControllerBase
     {
         private readonly BackCursosContext _context;
 
@@ -19,130 +21,83 @@ namespace BackCursos.Controllers
             _context = context;
         }
 
-        // GET: Categorias
-        public async Task<IActionResult> Index()
+        // GET: api/Categorias
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoria()
         {
-            return View(await _context.Categoria.ToListAsync());
+            return await _context.Categoria.ToListAsync();
         }
 
-        // GET: Categorias/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Categorias/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Categoria>> GetCategoria(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var categoria = await _context.Categoria
-                .FirstOrDefaultAsync(m => m.CategoriaId == id);
-            if (categoria == null)
-            {
-                return NotFound();
-            }
-
-            return View(categoria);
-        }
-
-        // GET: Categorias/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Categorias/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CategoriaId,CategoriaName")] Categoria categoria)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(categoria);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(categoria);
-        }
-
-        // GET: Categorias/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var categoria = await _context.Categoria.FindAsync(id);
+
             if (categoria == null)
             {
                 return NotFound();
             }
-            return View(categoria);
+
+            return categoria;
         }
 
-        // POST: Categorias/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CategoriaId,CategoriaName")] Categoria categoria)
+        // PUT: api/Categorias/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
         {
             if (id != categoria.CategoriaId)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            _context.Entry(categoria).State = EntityState.Modified;
+
+            try
             {
-                try
-                {
-                    _context.Update(categoria);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoriaExists(categoria.CategoriaId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
             }
-            return View(categoria);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CategoriaExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Categorias/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // POST: api/Categorias
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            _context.Categoria.Add(categoria);
+            await _context.SaveChangesAsync();
 
-            var categoria = await _context.Categoria
-                .FirstOrDefaultAsync(m => m.CategoriaId == id);
+            return CreatedAtAction("GetCategoria", new { id = categoria.CategoriaId }, categoria);
+        }
+
+        // DELETE: api/Categorias/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategoria(int id)
+        {
+            var categoria = await _context.Categoria.FindAsync(id);
             if (categoria == null)
             {
                 return NotFound();
             }
 
-            return View(categoria);
-        }
-
-        // POST: Categorias/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var categoria = await _context.Categoria.FindAsync(id);
             _context.Categoria.Remove(categoria);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool CategoriaExists(int id)

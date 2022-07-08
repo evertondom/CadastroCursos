@@ -7,10 +7,12 @@ namespace BackCursos.Models
     {
         public int LogId { get; set; }
 
-        [DisplayFormat(DataFormatString = "dd/MM/yyyy")]
+        [DataType(DataType.Date)]
+        [Required]
         public DateTime DataInclusao { get; set; }
 
-        [DisplayFormat(DataFormatString ="dd/MM/yyyy")]
+        
+        [DataType(DataType.Date)]
         public DateTime DataAtualizacao { get; set; }
 
         public Curso Curso { get; set; }
