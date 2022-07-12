@@ -42,6 +42,9 @@ namespace BackCursos
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
+           
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -52,6 +55,10 @@ namespace BackCursos
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(b => b.WithHeaders()
+                              .WithMethods()
+                              .WithOrigins());
 
             app.UseAuthorization();
 
