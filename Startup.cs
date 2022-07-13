@@ -28,7 +28,7 @@ namespace BackCursos
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddCors();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -56,9 +56,9 @@ namespace BackCursos
 
             app.UseRouting();
 
-            app.UseCors(b => b.WithHeaders()
-                              .WithMethods()
-                              .WithOrigins());
+            app.UseCors(b => b.AllowAnyHeader().
+                               AllowAnyOrigin().
+                               AllowAnyMethod());
 
             app.UseAuthorization();
 

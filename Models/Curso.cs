@@ -5,6 +5,7 @@ namespace BackCursos.Models
 {
     public class Curso
     {
+
         public int CursoId { get; set; }
 
         [Required(ErrorMessage ="Campo Obrigatório")]
