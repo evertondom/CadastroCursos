@@ -21,7 +21,7 @@ namespace BackCursos.Models
 
         public int QtdAlunos { get; set; }
 
-        public bool Ativo { get; set; }
+        public bool Ativo { get; set; } = true;
 
         public int CategoriaId { get; set; }
         public Categoria Categoria { get; set; }

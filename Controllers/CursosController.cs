@@ -25,7 +25,7 @@ namespace BackCursos.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Curso>>> GetCurso()
         {
-            return await _context.Curso.Include(x=>x.Categoria).ToListAsync();
+            return await _context.Curso.Include(x=>x.Categoria).Where(x=>x.Ativo).ToListAsync();
         }
 
         // GET: api/Cursos/5
@@ -127,7 +127,11 @@ namespace BackCursos.Controllers
             {
                 return NotFound();
             }
-
+            if((curso.DataFinal.Date >= DateTime.Now.Date && DateTime.Now.Date >= curso.DataInicial.Date) || DateTime.Now.Date > curso.DataFinal.Date)
+            {
+                return BadRequest(new { Atenção = "O curso foi finalizado, não poderá ser excluido." });
+            }
+            curso.Ativo = false;
             _context.Curso.Update(curso);
             await _context.SaveChangesAsync();
 
