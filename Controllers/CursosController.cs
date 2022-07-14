@@ -25,14 +25,14 @@ namespace BackCursos.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Curso>>> GetCurso()
         {
-            return await _context.Curso.ToListAsync();
+            return await _context.Curso.Include(x=>x.Categoria).ToListAsync();
         }
 
         // GET: api/Cursos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Curso>> GetCurso(int id)
         {
-            var curso = await _context.Curso.FindAsync(id);
+            var curso = await _context.Curso.Include(x=>x.Categoria).Where(x=>x.CursoId == id).FirstOrDefaultAsync();
 
             if (curso == null)
             {
@@ -48,7 +48,7 @@ namespace BackCursos.Controllers
         public async Task<IActionResult> PutCurso(int id, Curso curso)
         {
 
-            var existeCurso = _context.Curso.Any(c => (c.DataInicial <= curso.DataInicial && c.DataFinal >= curso.DataInicial) || (c.DataInicial <= curso.DataFinal && c.DataFinal >= curso.DataInicial));
+            var existeCurso = await _context.Curso.AnyAsync(c => ((c.DataInicial <= curso.DataInicial && c.DataFinal >= curso.DataInicial) || (c.DataInicial <= curso.DataFinal && c.DataFinal >= curso.DataInicial)) && c.CursoId != curso.CursoId);
             
 
 
@@ -128,7 +128,7 @@ namespace BackCursos.Controllers
                 return NotFound();
             }
 
-            _context.Curso.Remove(curso);
+            _context.Curso.Update(curso);
             await _context.SaveChangesAsync();
 
             return NoContent();
