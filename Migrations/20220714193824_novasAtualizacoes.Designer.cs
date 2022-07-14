@@ -4,14 +4,16 @@ using BackCursos.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BackCursos.Migrations
 {
     [DbContext(typeof(BackCursosContext))]
-    partial class BackCursosContextModelSnapshot : ModelSnapshot
+    [Migration("20220714193824_novasAtualizacoes")]
+    partial class novasAtualizacoes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,7 +59,7 @@ namespace BackCursos.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("QtdAlunos")
+                    b.Property<int>("QtdAlunos")
                         .HasColumnType("int");
 
                     b.HasKey("CursoId");

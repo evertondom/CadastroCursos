@@ -59,7 +59,7 @@ namespace BackCursos.Controllers
 
             if (curso.DataInicial < DateTime.Now)
             {
-                return BadRequest(new { Atenção = "A Data não pode ser menor que a Atual" });
+                return BadRequest(new { Mensagem = "A Data não pode ser menor que a Atual" });
             }
 
             _context.Entry(curso).State = EntityState.Modified;
@@ -94,15 +94,15 @@ namespace BackCursos.Controllers
         public async Task<ActionResult<Curso>> PostCurso(Curso curso)
         {
 
-            var existeCurso = _context.Curso.Any(c => (c.DataInicial <= curso.DataInicial && c.DataFinal >= curso.DataInicial) || (c.DataInicial <= curso.DataFinal && c.DataFinal >= curso.DataInicial));
+            var existeCurso = _context.Curso.Where(x => x.CursoId != curso.CursoId && x.Ativo == true).Any(c => (c.DataInicial <= curso.DataInicial && c.DataFinal >= curso.DataInicial) || (c.DataInicial <= curso.DataFinal && c.DataFinal >= curso.DataInicial));
             if(existeCurso)
             {
-                return BadRequest(new { Atenção = "Existe(m) curso(s) planejado(s) dentro do período informado" });
+                return BadRequest(new { Mensagem = "Existe(m) curso(s) planejado(s) dentro do período informado" });
             }
 
             if (curso.DataInicial < DateTime.Now)
             {
-                return BadRequest(new { Atenção = "A Data não pode ser menor que a Atual" });
+                return BadRequest(new { Mensagem = "A Data não pode ser menor que a Atual" });
             }
 
 
@@ -129,7 +129,7 @@ namespace BackCursos.Controllers
             }
             if((curso.DataFinal.Date >= DateTime.Now.Date && DateTime.Now.Date >= curso.DataInicial.Date) || DateTime.Now.Date > curso.DataFinal.Date)
             {
-                return BadRequest(new { Atenção = "O curso foi finalizado, não poderá ser excluido." });
+                return BadRequest(new { Mensagem = "Este curso não poderá ser excluido" });
             }
             curso.Ativo = false;
             _context.Curso.Update(curso);
