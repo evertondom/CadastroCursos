@@ -48,8 +48,8 @@ namespace BackCursos.Controllers
         public async Task<IActionResult> PutCurso(int id, Curso curso)
         {
 
-            var existeCurso = await _context.Curso.AnyAsync(c => ((c.DataInicial <= curso.DataInicial && c.DataFinal >= curso.DataInicial) || (c.DataInicial <= curso.DataFinal && c.DataFinal >= curso.DataInicial)) && c.CursoId != curso.CursoId);
-            
+            var existeCurso = await _context.Curso.Where(x => x.CursoId != curso.CursoId && x.Ativo == true).AnyAsync(c => ((c.DataInicial <= curso.DataInicial && c.DataFinal >= curso.DataInicial) || (c.DataInicial <= curso.DataFinal && c.DataFinal >= curso.DataInicial)) && c.CursoId != curso.CursoId);
+            var existeDescricao = _context.Curso.Where(x => x.CursoId != curso.CursoId && x.Ativo == true).Any(p => p.CursoId != curso.CursoId && p.Descricao == curso.Descricao);
 
 
             if (existeCurso)
@@ -60,6 +60,11 @@ namespace BackCursos.Controllers
             if (curso.DataInicial < DateTime.Now)
             {
                 return BadRequest(new { Mensagem = "A Data não pode ser menor que a Atual" });
+            }
+
+            if (existeDescricao)
+            {
+                return BadRequest(new { Mensagem = "Essa Descrição Já Existe" });
             }
 
             _context.Entry(curso).State = EntityState.Modified;
@@ -95,7 +100,7 @@ namespace BackCursos.Controllers
         {
 
             var existeCurso = _context.Curso.Where(x => x.CursoId != curso.CursoId && x.Ativo == true).Any(c => (c.DataInicial <= curso.DataInicial && c.DataFinal >= curso.DataInicial) || (c.DataInicial <= curso.DataFinal && c.DataFinal >= curso.DataInicial));
-            var existeDescricao = _context.Curso.Any(p => p.CursoId != curso.CursoId && p.Descricao == curso.Descricao);
+            var existeDescricao = _context.Curso.Where(x => x.CursoId != curso.CursoId && x.Ativo == true).Any(p => p.CursoId != curso.CursoId && p.Descricao == curso.Descricao);
 
 
             if(existeCurso)
