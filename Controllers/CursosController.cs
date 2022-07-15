@@ -95,6 +95,9 @@ namespace BackCursos.Controllers
         {
 
             var existeCurso = _context.Curso.Where(x => x.CursoId != curso.CursoId && x.Ativo == true).Any(c => (c.DataInicial <= curso.DataInicial && c.DataFinal >= curso.DataInicial) || (c.DataInicial <= curso.DataFinal && c.DataFinal >= curso.DataInicial));
+            var existeDescricao = _context.Curso.Any(p => p.CursoId != curso.CursoId && p.Descricao == curso.Descricao);
+
+
             if(existeCurso)
             {
                 return BadRequest(new { Mensagem = "Existe(m) curso(s) planejado(s) dentro do período informado" });
@@ -105,6 +108,10 @@ namespace BackCursos.Controllers
                 return BadRequest(new { Mensagem = "A Data não pode ser menor que a Atual" });
             }
 
+            if (existeDescricao)
+            {
+                return BadRequest(new { Mensagem = "Essa Descrição Já Existe" });
+            }
 
             _context.Curso.Add(curso);
             await _context.SaveChangesAsync();
